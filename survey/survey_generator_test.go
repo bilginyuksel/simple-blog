@@ -31,6 +31,15 @@ func TestGenerate_NoTitleNoQuestionsNoResults(t *testing.T) {
 	failIfNotError(err, t)
 }
 
-func TestSaveSurvey_(t *testing.T) {
+func TestGenerate_ValidRequest(t *testing.T) {
 
+	questions := []Question{}
+	results := []Result{}
+	request := SaveRequest{Questions: questions, Results: results, Title: "Title", Description: "Description"}
+
+	survey, err := Generate(&request)
+	failIfError(err, t)
+	if survey.Title != "Title" || survey.Description != "Description" {
+		t.Fail()
+	}
 }

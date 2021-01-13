@@ -2,15 +2,10 @@ package survey
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/bilginyuksel/simple-blog/user"
 )
-
-func init() {
-	fmt.Println("Hello world")
-}
 
 // SaveRequest ...
 type SaveRequest struct {
