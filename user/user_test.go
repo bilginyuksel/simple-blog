@@ -4,8 +4,10 @@ import (
 	"testing"
 )
 
+var rq = NewRegisterRequest("username", "email", "password", "password")
+
 func TestRegister_UserRegisteration(t *testing.T) {
-	user, err := Register("username", "email", "password")
+	user, err := rq.Register()
 	if err != nil || user == nil {
 		t.Fail()
 	}
@@ -13,8 +15,8 @@ func TestRegister_UserRegisteration(t *testing.T) {
 }
 
 func TestIsEmailExists_CheckEmail(t *testing.T) {
-	shouldTrue := IsEmailExists("noreply@gmail.com")
-	shouldFalse := IsEmailExists("demo@gmail.com")
+	shouldTrue := isEmailExists("noreply@gmail.com")
+	shouldFalse := isEmailExists("demo@gmail.com")
 	if shouldTrue == false || shouldFalse == true {
 		t.Fail()
 	}
@@ -22,8 +24,8 @@ func TestIsEmailExists_CheckEmail(t *testing.T) {
 }
 
 func TestIsUsernameExists_CheckUsername(t *testing.T) {
-	shouldTrue := IsUsernameExists("bilginyuksel")
-	shouldFalse := IsUsernameExists("lemoan")
+	shouldTrue := isUsernameExists("bilginyuksel")
+	shouldFalse := isUsernameExists("lemoan")
 	if shouldTrue == false || shouldFalse == true {
 		t.Fail()
 	}
@@ -31,8 +33,9 @@ func TestIsUsernameExists_CheckUsername(t *testing.T) {
 }
 
 func TestRegister_PasswordShouldBeDecryped(t *testing.T) {
-	user, _ := Register("username", "email", "password")
-	if user.Password() == "password" {
+	user, _ := rq.Register()
+	pass := user.password
+	if pass == "password" {
 		t.Fail()
 	}
 }
