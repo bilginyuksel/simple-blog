@@ -2,9 +2,11 @@ package user
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -114,17 +116,45 @@ func AuthenticateWithEmail(email string, password string) (*User, error) {
 	return nil, nil
 }
 
+const secretKey = "mysecretkey"
+
+func validateJWT(jwtToken string) (*jwt.Token, bool) {
+	token, _ := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the algorithm what you expect.
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
+		}
+		return []byte(secretKey), nil
+	})
+	return token, token != nil && token.Valid
+}
+
 // AuthenticateWithJWT ...
-// func AuthenticateWithJWT(token string) (*User, error) {
-// 	token, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-// 		// Don't forget to validate the algorithm what you expect.
-// 		if _, ok := token.Method(*jwt.SigningMethodHMAC); !ok {
-// 			return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
-// 		}
-// 		return hmacSampleSecret, nil
-// 	})
-// 	return nil, nil
-// }
+func AuthenticateWithJWT(jwtToken string) (*User, error) {
+
+	token, ok := validateJWT(jwtToken)
+	if ok {
+		fmt.Println(token)
+	}
+
+	return nil, nil
+}
+
+// CreateJWT ...
+func (u *User) CreateJWT() string {
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"foo": "bar",
+		"exp": time.Now().Add(3).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	tokenString, err := token.SignedString([]byte(secretKey))
+
+	fmt.Println(tokenString, err)
+
+	return tokenString
+}
 
 // IsEmailExists Check if any user registered with the same email.
 func isEmailExists(email string) bool {

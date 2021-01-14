@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -36,6 +37,15 @@ func TestRegister_PasswordShouldBeDecryped(t *testing.T) {
 	user, _ := rq.Register()
 	pass := user.password
 	if pass == "password" {
+		t.Fail()
+	}
+}
+
+func TestCreateJWT_GetToken(t *testing.T) {
+	user, _ := rq.Register()
+	token := user.CreateJWT()
+	fmt.Println(token)
+	if _, ok := validateJWT(token); !ok {
 		t.Fail()
 	}
 }
