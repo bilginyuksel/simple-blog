@@ -12,10 +12,12 @@ import (
 
 var emails map[string]string
 var usernames map[string]string
+var mockUsers map[string]*User
 
 func init() {
 	emails = make(map[string]string)
 	usernames = make(map[string]string)
+    mockUsers = make(map[string]*User)
 
 	emails["noreply@gmail.com"] = "string"
 	usernames["bilginyuksel"] = "string"
@@ -116,7 +118,7 @@ func AuthenticateWithEmail(email string, password string) (*User, error) {
 	return nil, nil
 }
 
-const secretKey = "mysecretkey"
+const secretKey = "my-secret-key"
 
 func validateJWT(jwtToken string) (*jwt.Token, bool) {
 	token, _ := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
@@ -137,7 +139,13 @@ func AuthenticateWithJWT(jwtToken string) (*User, error) {
 		fmt.Println(token)
 	}
 
-	return nil, nil
+    user, ok := mockUsers[jwtToken]
+
+    if !ok {
+        return nil, errors.New("No users found. System error JWT is correct!")
+    }
+
+	return user, nil
 }
 
 // CreateJWT ...
@@ -152,6 +160,10 @@ func (u *User) CreateJWT() string {
 	tokenString, err := token.SignedString([]byte(secretKey))
 
 	fmt.Println(tokenString, err)
+
+    // TODO: don't do this... This is just a mock implementation to test 
+    // its behavior.
+    mockUsers[tokenString] = u
 
 	return tokenString
 }
