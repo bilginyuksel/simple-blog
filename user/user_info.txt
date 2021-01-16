@@ -1,0 +1,18 @@
+Which features we are supporting currenlty?
+
+RegisterRequest 
+    + Register() 
+
+User 
+    + CreateJWT() 
+
+Global
+    + NewRegisterRequest
+    + AuthenticateWithUsername
+    + AuthenticateWithEmail
+    + AuthenticateWithJWT
+
+    - validateJWT
+    - isEmailExists
+    - isUsernameExists
+

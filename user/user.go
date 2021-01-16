@@ -35,7 +35,7 @@ type User struct {
 	active      bool
 	confirmed   bool
 
-	Username string
+	username string
 }
 
 // RegisterRequest Is the struct object when new user is registering the system.
@@ -49,7 +49,7 @@ type RegisterRequest struct {
 	Password2 string `json:"password2"`
 }
 
-const alreadyExists = "Username or email already exists"
+const alreadyExists = "username or email already exists"
 const mandatoryInformationsMissing = "Mandatory informations missing in the RegisterRequest object."
 
 // NewRegisterRequest Create user registeration request with mandatory parameters.
@@ -86,13 +86,13 @@ func (rq *RegisterRequest) Register() (*User, error) {
 		firstname: rq.Firstname,
 		lastname:  rq.Lastname,
 		email:     rq.Email,
-		Username:  rq.Username,
+		username:  rq.Username,
 		password:  string(hash),
 	}, nil
 }
 
-// AuthenticateWithUsername Basic authentication
-func AuthenticateWithUsername(username string, password string) (*User, error) {
+// AuthenticateWithusername Basic authentication
+func AuthenticateWithusername(username string, password string) (*User, error) {
 	if !isUsernameExists(username) {
 		return nil, errors.New("username not exists")
 	}
@@ -148,8 +148,9 @@ func AuthenticateWithJWT(jwtToken string) (*User, error) {
 	return user, nil
 }
 
-// CreateJWT ...
-func (u *User) CreateJWT() string {
+
+// Login ...
+func (u *User) Login() string {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"foo": "bar",
@@ -174,7 +175,7 @@ func isEmailExists(email string) bool {
 	return ok
 }
 
-// IsUsernameExists Check if any user registered with the same username
+// IsusernameExists Check if any user registered with the same username
 func isUsernameExists(username string) bool {
 	_, ok := usernames[username]
 	return ok
