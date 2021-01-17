@@ -2,77 +2,68 @@ package post
 
 import (
 	"time"
+
+    "github.com/bilginyuksel/simple-blog/user"
 )
 
-// NewPost ...
-func NewPost(title string, subtitle string, content string) *Post {
-	return &Post{Title: title, SubTitle: subtitle, Content: content}
+type PostRequest struct {
+    Title string
+    SubTitle string
+    Content string
+
+    //Category *Category
+    //tags []Tag
+    Author *user.User
 }
 
-// NewTag ...
-func NewTag(title string, description string) *Tag {
-	return &Tag{Title: title, Description: description}
-}
+func (pr *PostRequest) CreatePost() *Post{
 
-// NewCategory ...
-func NewCategory(title string, description string) *Category {
-	return &Category{Title: title, Description: description}
-}
-
-// Publish ...
-func (p *Post) Publish() {
-	p.Published = true
-	p.PublishTime = time.Now()
-}
-
-// AddTag ...
-func (p *Post) AddTag(t *Tag) {
-	for _, tag := range p.Tags {
-		if tag.Title == t.Title {
-			return
-		}
-	}
-	p.Tags = append(p.Tags, *t)
-}
-
-// AddCategory ...
-func (p *Post) AddCategory(c *Category) {
-	p.Category = c
-}
-
-// View ...
-func (p *Post) View() {
-	p.Viewed++
+    return &Post{
+        id: 1,
+        uuid: "randomuuid",
+        title: pr.Title,
+        subTitle: pr.SubTitle,
+        content: pr.Content,
+        tags: nil,
+        createTime: time.Now(),
+        updateTime: time.Now(),
+        publishTime: time.Now(),
+        author: pr.Author,
+        published: false,
+        viewed: 0,
+        liked: 0,
+    }
 }
 
 // Post ...
 type Post struct {
-	ID          int64
-	UUID        string
-	Title       string
-	Category    *Category
-	SubTitle    string
-	Content     string
-	Tags        []Tag
-	CreateTime  time.Time
-	UpdateTime  time.Time
-	PublishTime time.Time
-	// Author      *User
-	Published bool
-	Viewed    int64
-	Liked     int64
+	id          int64
+	uuid        string
+	title       string
+	category    *Category
+	subTitle    string
+	content     string
+	tags        []Tag
+	createTime  time.Time
+	updateTime  time.Time
+	publishTime time.Time
+	author      *user.User
+	published bool
+	viewed    int64
+	liked     int64
 }
 
 // Category ...
 type Category struct {
-	ID          int
-	Title       string
-	Description string
+	id          int
+	title       string
+	description string
 }
 
 // Tag ....
 type Tag struct {
-	ID          int
-	Title       string
-	Description string
+	id          int
+	title       string
+	description string
 }
+
