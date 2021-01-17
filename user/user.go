@@ -17,7 +17,7 @@ var mockUsers map[string]*User
 func init() {
 	emails = make(map[string]string)
 	usernames = make(map[string]string)
-    mockUsers = make(map[string]*User)
+	mockUsers = make(map[string]*User)
 
 	emails["noreply@gmail.com"] = "string"
 	usernames["bilginyuksel"] = "string"
@@ -34,6 +34,7 @@ type User struct {
 	updatedTime time.Time
 	active      bool
 	confirmed   bool
+	permissions []string
 
 	username string
 }
@@ -120,7 +121,7 @@ func AuthenticateWithEmail(email string, password string) (*User, error) {
 
 const secretKey = "my-secret-key"
 
-func validateJWT(jwtToken string) (*jwt.Token, bool) {
+func validateJWT(jwtToken string) (map[string]interface{}, bool) {
 	token, _ := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the algorithm what you expect.
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -128,7 +129,9 @@ func validateJWT(jwtToken string) (*jwt.Token, bool) {
 		}
 		return []byte(secretKey), nil
 	})
-	return token, token != nil && token.Valid
+
+	claims := token.Claims.(jwt.MapClaims)
+	return claims, token != nil && token.Valid
 }
 
 // AuthenticateWithJWT ...
@@ -139,22 +142,23 @@ func AuthenticateWithJWT(jwtToken string) (*User, error) {
 		fmt.Println(token)
 	}
 
-    user, ok := mockUsers[jwtToken]
+	user, ok := mockUsers[jwtToken]
 
-    if !ok {
-        return nil, errors.New("No users found. System error JWT is correct!")
-    }
+	if !ok {
+		return nil, errors.New("No users found. System error JWT is correct!")
+	}
 
 	return user, nil
 }
-
 
 // Login ...
 func (u *User) Login() string {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"foo": "bar",
-		"exp": time.Now().Add(3).Unix(),
+		"exp":  time.Now().Add(3).Unix(),
+		"iss":  u.username,
+		"uid":  u.id,
+		"perm": u.permissions,
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
@@ -162,9 +166,9 @@ func (u *User) Login() string {
 
 	fmt.Println(tokenString, err)
 
-    // TODO: don't do this... This is just a mock implementation to test 
-    // its behavior.
-    mockUsers[tokenString] = u
+	// TODO: don't do this... This is just a mock implementation to test
+	// its behavior.
+	mockUsers[tokenString] = u
 
 	return tokenString
 }
