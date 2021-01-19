@@ -3,36 +3,38 @@ package post
 import (
 	"time"
 
-    "github.com/bilginyuksel/simple-blog/user"
+	"github.com/bilginyuksel/simple-blog/user"
 )
 
-type PostRequest struct {
-    Title string
-    SubTitle string
-    Content string
+// CreateRequest Create a post request to create new posts.
+type CreateRequest struct {
+	Title    string `json:"title"`
+	SubTitle string `json:"subTitle"`
+	Content  string `json:"content"`
 
-    //Category *Category
-    //tags []Tag
-    Author *user.User
+	//Category *Category
+	//tags []Tag
+	Author *user.User `json:"author"`
 }
 
-func (pr *PostRequest) CreatePost() *Post{
+// CreatePost ...
+func (pr *CreateRequest) CreatePost() *Post {
 
-    return &Post{
-        id: 1,
-        uuid: "randomuuid",
-        title: pr.Title,
-        subTitle: pr.SubTitle,
-        content: pr.Content,
-        tags: nil,
-        createTime: time.Now(),
-        updateTime: time.Now(),
-        publishTime: time.Now(),
-        author: pr.Author,
-        published: false,
-        viewed: 0,
-        liked: 0,
-    }
+	return &Post{
+		id:         1,
+		uuid:       "randomuuid",
+		title:      pr.Title,
+		subTitle:   pr.SubTitle,
+		content:    pr.Content,
+		tags:       nil,
+		createTime: time.Now(),
+		// updateTime:  time.Now(),
+		// publishTime: time.Now(),
+		author:    pr.Author,
+		published: false,
+		viewed:    0,
+		liked:     0,
+	}
 }
 
 // Post ...
@@ -48,9 +50,9 @@ type Post struct {
 	updateTime  time.Time
 	publishTime time.Time
 	author      *user.User
-	published bool
-	viewed    int64
-	liked     int64
+	published   bool
+	viewed      int64
+	liked       int64
 }
 
 // Category ...
@@ -66,4 +68,3 @@ type Tag struct {
 	title       string
 	description string
 }
-

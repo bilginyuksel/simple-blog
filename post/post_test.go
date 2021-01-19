@@ -1,109 +1,29 @@
 package post
 
-import "testing"
+import (
+	"testing"
+	"time"
 
-func TestNewPost_ExpectNewPost(t *testing.T) {
-	post := NewPost("title", "subtitle", "content")
-	if "title" != post.Title {
-		t.Error()
-	}
+	util "github.com/bilginyuksel/simple-blog/utils"
+)
 
-	if "subtitle" != post.SubTitle {
-		t.Error()
-	}
+func assertPostEquals(t *testing.T, given *Post, expected *Post) {
+	util.AssertEquals(t, given.content, expected.content)
+	util.AssertEquals(t, given.title, expected.title)
+	util.AssertEquals(t, given.subTitle, expected.subTitle)
+	util.AssertEquals(t, given.liked, expected.liked)
+	util.AssertEquals(t, given.viewed, expected.viewed)
+	util.AssertEquals(t, given.published, expected.published)
 
-	if "content" != post.Content {
-		t.Error()
-	}
+	util.AssertTimePrecision(t, given.createTime, expected.createTime)
+	util.AssertTimePrecision(t, given.updateTime, expected.updateTime)
+	util.AssertTimePrecision(t, given.publishTime, expected.publishTime)
 }
 
-func TestNewPost_NotPublished(t *testing.T) {
-	post := NewPost("title", "subtitle", "content")
-	if post.Published {
-		t.Error()
-	}
-}
+func TestCreatePost_GetPost(t *testing.T) {
+	pr := CreateRequest{Title: "my-title", SubTitle: "my-sub-title", Content: "big content", Author: nil}
+	expected := &Post{title: "my-title", subTitle: "my-sub-title", content: "big content", createTime: time.Now()}
+	given := pr.CreatePost()
 
-func TestPublishPost_ExpectPublishTimeAndPublishedUpdated(t *testing.T) {
-	post := NewPost("title", "subtitle", "content")
-	oldTime := post.PublishTime
-	if post.Published {
-		t.Error()
-	}
-	post.Publish()
-	if !post.Published {
-		t.Error()
-	}
-
-	if oldTime == post.PublishTime {
-		t.Error()
-	}
-
-	t.Logf("old time %v, new time %v", oldTime, post.PublishTime)
-}
-
-// func TestUpdatePost_Update(t *testing.T) {
-// 	post := NewPost("tittltle", "subtitle", "content")
-// }
-func TestAddTag_ExpectNewTag(t *testing.T) {
-	tag := NewTag("tag", "description")
-	post := NewPost("title", "subtitle", "content")
-
-	if len(post.Tags) != 0 {
-		t.Error()
-	}
-	post.AddTag(tag)
-	if len(post.Tags) == 0 {
-		t.Error()
-	}
-}
-
-func TestAddTagAddSameTag_ExpectNothing(t *testing.T) {
-	tag := NewTag("tag", "description")
-	post := NewPost("title", "subtitle", "content")
-	post.AddTag(tag)
-	post.AddTag(tag)
-
-	if len(post.Tags) != 1 {
-		t.Error()
-	}
-}
-
-func TestViewPost_IncreaseView(t *testing.T) {
-	post := NewPost("title", "content", "description")
-	post.View()
-	if 1 != post.Viewed {
-		t.Error()
-	}
-
-	for i := 0; i < 10; i++ {
-		post.View()
-	}
-
-	if 11 != post.Viewed {
-		t.Error()
-	}
-}
-
-func TestNewCategory_NewCategory(t *testing.T) {
-	cat := NewCategory("category", "description")
-	if "category" != cat.Title {
-		t.Error()
-	}
-
-	if "description" != cat.Description {
-		t.Error()
-	}
-}
-
-func TestAddCategory_AddCatToPost(t *testing.T) {
-	cat := NewCategory("category", "description")
-	post := NewPost("title", "subtitle", "content")
-	post.AddCategory(cat)
-	if post.Category.Title != cat.Title {
-		t.Error()
-	}
-	if post.Category.Description != cat.Description {
-		t.Error()
-	}
+	assertPostEquals(t, given, expected)
 }
